@@ -61,7 +61,7 @@ const on = (element, event, selector, handler) => {
 on(document, 'click', '.btnBorrar', e => {
     const fila = e.target.parentNode.parentNode
     const id = fila.firstElementChild.innerHTML
-    alertify.confirm("This is a confirm dialog.",
+    alertify.confirm("¿Desea eliminar el registro?",
     function(){
         fetch(url+id, {
             method: 'DELETE'
@@ -136,27 +136,35 @@ formUsuario.addEventListener('submit', (e)=>{
 
 // procedimiento para la barra de busqueda
 document.addEventListener("click", (event) =>{
+
     if(event.target.matches("#btn-buscar-correo")){
-        console.log(busqueda.value);
-        resultados = "";        
-        fetch(url+"email/" + busqueda.value)
-        .then( response => response.json() )
-        .then( data => mostrar(data) )
-        .catch( error => console.log(error))
+        
+        if(busqueda.value != ""){
+            console.log(busqueda.value);
+            resultados = "";        
+            fetch(url + "email/" + busqueda.value)
+            .then( response => response.json() )
+            .then( data => {
+                if(data === {}){
+                    console.log("Error")
+                }
+                mostrar(data)} )
+            .catch( error => console.log(error))
+        }
+        
     }
 
     if(event.target.matches("#btn-eliminar-correo")){
-        alertify.confirm("This is a confirm dialog.",
+        event.preventDefault();
+        alertify.confirm("¿Desea eliminar el registro?",
         function(){
             fetch(url+"email/" + busqueda.value, {
                 method: 'DELETE'
             })
             .then( (res) => {res.json()})
             .then( ()=> {location.reload()})
+            .catch( (error)=> {console.log("Error: " + error.status)})
             //alertify.success('Ok')
-        },
-        function(){
-            alertify.error('Cancel')
         })
     }
 });
