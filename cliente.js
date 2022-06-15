@@ -10,6 +10,8 @@ const email = document.getElementById('email')
 const prioridad = document.getElementById('prioridad')
 var opcion = ''
 
+const busqueda = document.getElementById('buscar-correo')
+
 btnCrear.addEventListener('click', ()=>{
     nombre.value = ''
     email.value = ''
@@ -17,6 +19,8 @@ btnCrear.addEventListener('click', ()=>{
     modalUsuario.show()
     opcion = 'crear'
 })
+
+
 
 //funcion para mostrar los resultados
 const mostrar = (usuarios) => {
@@ -62,8 +66,8 @@ on(document, 'click', '.btnBorrar', e => {
         fetch(url+id, {
             method: 'DELETE'
         })
-        .then( res => res.json() )
-        .then( ()=> location.reload())
+        .then( (res) => {res.json()})
+        .then( ()=> {location.reload()})
         //alertify.success('Ok')
     },
     function(){
@@ -130,3 +134,29 @@ formUsuario.addEventListener('submit', (e)=>{
     modalUsuario.hide()
 })
 
+// procedimiento para la barra de busqueda
+document.addEventListener("click", (event) =>{
+    if(event.target.matches("#btn-buscar-correo")){
+        console.log(busqueda.value);
+        resultados = "";        
+        fetch(url+"email/" + busqueda.value)
+        .then( response => response.json() )
+        .then( data => mostrar(data) )
+        .catch( error => console.log(error))
+    }
+
+    if(event.target.matches("#btn-eliminar-correo")){
+        alertify.confirm("This is a confirm dialog.",
+        function(){
+            fetch(url+"email/" + busqueda.value, {
+                method: 'DELETE'
+            })
+            .then( (res) => {res.json()})
+            .then( ()=> {location.reload()})
+            //alertify.success('Ok')
+        },
+        function(){
+            alertify.error('Cancel')
+        })
+    }
+});
